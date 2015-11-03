@@ -1,0 +1,65 @@
+#version 330 core
+
+in vec2 pass_textureCoords;
+in vec3 surfaceNormal;
+in vec3 toLightVector;
+in vec3 toCameraVector;
+in float visibility;
+in vec4 fragLightSpace;
+
+
+out vec4 final_Color;
+
+
+uniform sampler2D textureSampler;
+uniform sampler2D shadowMap;
+uniform vec3 skyColor;
+uniform vec3 lightColor;
+uniform float reflectivity;
+uniform float shineDamper;
+
+float bias = 0.0001;
+
+float ShadowCalculation(vec4 fragLightSpace)
+{
+    vec3 projCoords = fragLightSpace.xyz / fragLightSpace.w;
+	projCoords = projCoords * 0.5 + 0.5; 
+	float closestDepth = texture(shadowMap, projCoords.xy).r;   
+	float currentDepth = projCoords.z;  
+	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;  
+	return shadow;
+}
+
+void main() {
+	
+
+	vec3 unitNormal = normalize(surfaceNormal);
+	vec3 unitLightVector = normalize(toLightVector);
+	vec3 unitVectorToCamera = normalize(toCameraVector);
+
+	float nDot1 = dot(unitNormal, unitLightVector);
+
+	vec3 lightDirection = -unitLightVector;
+	vec3 reflectedLightDirection = reflect(lightDirection, unitNormal);
+	float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
+	specularFactor = max(specularFactor, 0.2);
+	float dampedFactor = pow(specularFactor, shineDamper);
+	vec3 finalSpecular = dampedFactor * reflectivity * lightColor;
+	float brightness = max(nDot1, 0.0);                 //0.1 Ambient lightning
+	vec3 diffuse = brightness * lightColor;
+	
+    vec4 textureColor = texture(textureSampler, pass_textureCoords);
+	
+	if(textureColor.a <= 0.3)
+		discard;
+		
+	vec3 finalTextureRGB = textureColor.rgb;
+	
+	bias = max(0.0001 * (1.0 - nDot1), 0.0001);
+	float shadow = ShadowCalculation(fragLightSpace);
+	
+	vec3 lighting = (0.2 + (1.0 - shadow) * (diffuse + finalSpecular)) * (finalTextureRGB);
+
+	final_Color = vec4(lighting, 1.0); // (1.0 - shadow) * (vec4(diffuse, 1.0) * textureColor + vec4(finalSpecular, 1.0));
+	final_Color = mix(vec4(skyColor, 1.0), final_Color, visibility);
+}

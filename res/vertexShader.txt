@@ -1,0 +1,42 @@
+#version 330 core
+
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 textureCoords;
+layout(location = 2) in vec3 normal;
+
+out vec2 pass_textureCoords;
+out vec3 surfaceNormal;
+out vec3 toLightVector;
+out vec3 toCameraVector;
+out float visibility;
+out vec4 fragLightSpace;
+
+
+uniform mat4 transform;
+uniform mat4 viewMatrix;
+uniform mat4 projection;
+uniform vec3 lightPosition;
+uniform mat4 lightSpaceMatrix;
+uniform vec4 plane;
+
+const float density = 0.0012;
+const float gradient = 3.5;
+
+void main() {
+	
+
+	vec4 worldPosition = transform * vec4(position, 1.0);
+	gl_ClipDistance[0] = dot(worldPosition, plane);
+	surfaceNormal = (transform * vec4(normal, 0.0)).xyz;
+	pass_textureCoords = textureCoords;
+	vec4 positionRelativeToCam = viewMatrix * worldPosition;
+	
+	toLightVector = lightPosition - worldPosition.xyz;
+	toCameraVector = (inverse(viewMatrix) * vec4(0.0,0.0,0.0,1.0)).xyz - worldPosition.xyz;
+	gl_Position = projection * viewMatrix * worldPosition; //The vertex position in the world relative to camera
+
+	float distance = length(positionRelativeToCam.xyz);
+    visibility = exp(-pow((distance*density), gradient));
+    visibility = clamp(visibility, 0.0, 1.0);
+	fragLightSpace = lightSpaceMatrix * worldPosition;
+}

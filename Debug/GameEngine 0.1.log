@@ -1,0 +1,14 @@
+﻿Build started 11/3/2015 2:32:43 PM.
+     1>Project "C:\Users\Eppu\Documents\Visual Studio 2015\Projects\GameEngine 0.1\GameEngine 0.1\GameEngine 0.1.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I.\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Octree.cpp
+         Octree.cpp
+         INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe'
+             Please choose the Technical Support command on the Visual C++
+             Help menu, or open the Technical Support help file for more information
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppCommon.targets(355,5): error MSB6006: "CL.exe" exited with code 2.
+     1>Done Building Project "C:\Users\Eppu\Documents\Visual Studio 2015\Projects\GameEngine 0.1\GameEngine 0.1\GameEngine 0.1.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:01.14
